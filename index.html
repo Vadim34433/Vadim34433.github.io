@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Школьный Портал</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* --- Общие стили --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #E6F2FF 0%, #D8ECF5 100%);
+            color: #333;
+            transition: filter 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: none;
+        }
+
+        .header {
+            background: linear-gradient(120deg, #64b5f6, #2196f3);
+            color: #fff;
+            padding: 25px;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .header:hover {
+            transform: translateY(-3px);
+        }
+
+        h1,
+        h2 {
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Стили для навигации (меню) */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 12px 0;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(5px);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .navbar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .navbar li {
+            margin: 0 20px;
+        }
+
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: inline-block;
+        }
+
+        .navbar a:hover {
+            background-color: #c8e6c9;
+            color: #2e7d32;
+            transform: scale(1.05);
+        }
+
+        /* Стили для контента */
+        .main-content {
+            padding: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .news-section,
+        .login-section {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
+        }
+
+        .news-section:hover,
+        .login-section:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (min-width: 768px) {
+
+            .news-section,
+            .login-section {
+                width: 48%;
+                margin-right: 2%;
+            }
+
+            .news-section:nth-child(2n),
+            .login-section:nth-child(2n) {
+                margin-right: 0;
+            }
+        }
+
+        /* Стили для новостей */
+        .news-item {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .news-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .news-item h3 {
+            margin: 0 0 8px 0;
+            color: #3498db;
+            font-size: 1.5em;
+        }
+
+        .news-item p {
+            margin: 8px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        /* Стили для кнопки "Выйти" */
+        #logoutButton {
+            background-color: #e74c3c;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: none;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+
+        #logoutButton:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            background-color: #34495e;
+            color: #fff;
+            text-align: center;
+            padding: 18px;
+            font-size: 0.9em;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            border-top: 2px solid #2c3e50;
+        }
+
+        /* Стили для модального окна авторизации */
+        .auth-modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://pic.rutubelist.ru/video/7c/db/7cdb98dc87f41c62eb0a8aab0a50d1dd.jpg');
+            background-size: cover;
+            background-position: center;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .auth-modal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-modal-content {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            width: 80%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .auth-modal-content:hover {
+            transform: scale(1.02);
+        }
+
+        .auth-modal h2 {
+            margin-bottom: 30px;
+            color: #3498db;
+            font-size: 2.2em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-modal label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-align: left;
+            color: #34495e;
+        }
+
+        .auth-modal input[type="text"],
+        .auth-modal input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1.1em;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .auth-modal input[type="text"]:focus,
+        .auth-modal input[type="password"]:focus {
+            background-color: #fff;
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .auth-modal .remember-me {
+            margin-bottom: 25px;
+            text-align: left;
+            color: #34495e;
+        }
+
+        .auth-modal button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-modal button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #authError {
+            color: #c0392b;
+            margin-top: 15px;
+            display: none;
+        }
+
+        /* Стили для профиля */
+        .profile-info {
+            text-align: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Стили для стены сообщений */
+        .wall-section {
+            margin-top: 20px;
+        }
+
+        .wall-post {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+
+        .wall-post:hover {
+            transform: scale(1.01);
+        }
+
+        .wall-post p {
+            margin: 5px 0;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .wall-post .author {
+            font-weight: bold;
+            color: #2980b9;
+        }
+
+        .wall-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wall-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .wall-form textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .wall-form button {
+            background-color: #2ecc71;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .wall-form button:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Кнопка удаления сообщения */
+        .delete-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 0.9em;
+            display: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .delete-button:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+
+        /* Отображаем кнопку удаления только при наведении на пост */
+        .wall-post:hover .delete-button {
+            display: block;
+        }
+
+        /* Стили для редактирования контента */
+        .editable-content {
+            border: 1px dashed #ccc;
+            padding: 10px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            position: relative;
+            transition: border-color 0.3s ease;
+        }
+
+        .editable-content:hover {
+            border-color: #3498db;
+        }
+
+        /* Стили для режима редактирования */
+        .editable-content.editing {
+            border-color: #2ecc71;
+        }
+
+        .editable-content.editing::after {
+            content: 'Редактируется...';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #2ecc71;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 5px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>Школьный сайт (топ 1)</h1>
+        <p>Добро пожаловать!</p>
+    </header>
+
+    <nav class="navbar">
+        <div class="container">
+            <ul>
+                <li><a href="#" onclick="showSection('main')">Главная</a></li>
+                <li><a href="#" onclick="showSection('sto')">Расписание</a></li>
+                <li><a href="#" onclick="showSection('news')">Новости</a></li>
+                <li><a href="#" onclick="showSection('toilet')">Новости туалета</a></li>
+                <li><a href="#" onclick="showSection('teachers')">Расписание зв.</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container main-content" id="mainContent">
+
+        <!-- Главная страница -->
+        <section id="main" class="news-section">
+            <h2>Добро пожаловать на Школьный сайт!</h2>
+            <p id="main-welcome-text" class="editable-content" onclick="toggleEdit(this)">Здесь вы найдете
+                актуальную информацию о жизни нашей школы.</p>
+            <p id="main-choose-section" class="editable-content" onclick="toggleEdit(this)">Выберите раздел в меню для
+                просмотра.</p>
+
+            <!-- Стена сообщений -->
+            <div class="wall-section">
+                <h3>Стена сообщений</h3>
+
+                <div id="wallPosts">
+                    <!-- Здесь будут отображаться сообщения -->
+                </div>
+
+                <!-- Форма для добавления сообщения -->
+                <form class="wall-form" id="wallForm" onsubmit="addWallPost(event)">
+                    <textarea id="wallMessage" placeholder="Напишите что-нибудь..." required></textarea>
+                    <button type="submit">Отправить</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Секция Столовой -->
+        <section id="sto" class="news-section" style="display:none;">
+            <h2 class="editable-content" onclick="toggleEdit(this)">Расписание</h2>
+            <div class="editable-content" onclick="toggleEdit(this)">
+                <p>Сегодня в меню:</p>
+                <ul id="sto-menu-items">
+                    <li>Суп</li>
+                    <li>Второе блюдо</li>
+                    <li>Напиток</li>
+                </ul>
+                <p>Приятного аппетита!</p>
+            </div>
+        </section>
+
+        <!-- Секция новостей -->
+        <section id="news" class="news-section" style="display:none;">
+            <h2>Общие Новости</h2>
+            <div class="news-item">
+                <img src="" alt="Школьные новости">
+                <h3 id="news-title-1" class="editable-content" onclick="toggleEdit(this)">Важное объявление</h3>
+                <p id="news-desc-1" class="editable-content" onclick="toggleEdit(this)">Скоро</p>
+            </div>
+            <div class="news-item">
+                <img src="" alt="Новости школы">
+                <h3 id="news-title-2" class="editable-content" onclick="toggleEdit(this)">Труляля</h3>
+                <p id="news-desc-2" class="editable-content" onclick="toggleEdit(this)">ляля</p>
+            </div>
+        </section>
+
+        <!-- Секция новостей класса (пример) -->
+        <section id="toilet" class="news-section" style="display:none;">
+            <h2 id="toilet-title" class="editable-content" onclick="toggleEdit(this)">Новости туалета</h2>
+            <p id="toilet-desc" class="editable-content" onclick="toggleEdit(this)">аа</p>
+        </section>
+
+        <!-- Секция новостей туалета (шутка!) -->
+        <section id="teachers" class="news-section" style="display:none;">
+            <h2 id="teacher-title" class="editable-content" onclick="toggleEdit(this)">Расписание звонков</h2>
+            <p id="teacher-desc" class="editable-content" onclick="toggleEdit(this)">К сожалению, новостей нет.</p>
+        </section>
+
+        <!-- Кнопка "Выйти" -->
+        <button id="logoutButton" onclick="logout()">Выйти</button>
+
+    </main>
+
+    <footer class="footer">
+        &copy; 2025 Школьный сайт.
+    </footer>
+
+    <!-- Модальное окно авторизации -->
+    <div id="authModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <h2>Авторизация</h2>
+            <form id="authForm" onsubmit="login(event)">
+                <label for="authUsername">Имя пользователя:</label>
+                <input type="text" id="authUsername" name="authUsername" required>
+
+                <label for="authPassword">Пароль:</label>
+                <input type="password" id="authPassword" name="authPassword" required>
+
+                <div class="remember-me">
+                    <label for="rememberMe">
+                        <input type="checkbox" id="rememberMe" name="rememberMe"> Запомнить меня
+                    </label>
+                </div>
+
+                <button type="submit">Войти</button>
+                <p id="authError" style="color: red; display: none;">Неверное имя пользователя или пароль.</p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Локальное хранилище для аккаунта
+        let loggedInUser = null; // null если не авторизован
+
+        // Список учетных записей (в реальном проекте это должно храниться на сервере)
+        const accounts = [
+            { username: 'student1', password: 'password1', role: 'student' },
+            { username: 'Admin', password: '123456789', role: 'admin' },
+            { username: 'student2', password: 'password2', role: 'student' },
+            { username: 'student3', password: 'password4', role: 'student' },
+            // Добавьте больше аккаунтов здесь
+        ];
+
+        // Массив для хранения сообщений на стене
+        let wallMessages = [];
+
+        function showSection(sectionId) {
+            // Скрываем все секции
+            const sections = document.querySelectorAll('.news-section, .container');
+            sections.forEach(section => {
+                if (section.id === sectionId || section.classList.contains('container')) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
+        function login(event) {
+            event.preventDefault(); // Предотвращаем перезагрузку страницы
+
+            const username = document.getElementById('authUsername').value;
+            const password = document.getElementById('authPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const authError = document.getElementById('authError');
+
+            // Проверка учетных записей
+            const account = accounts.find(acc => acc.username === username && acc.password === password);
+
+            if (account) {
+                loggedInUser = { username: username, role: account.role }; // Создаем объект пользователя
+                authError.style.display = 'none';
+
+                // Запоминаем пользователя, если стоит галочка
+                if (rememberMe) {
+                    localStorage.setItem('rememberedUser', JSON.stringify(loggedInUser));
+                } else {
+                    localStorage.removeItem('rememberedUser'); // Удаляем, если галочка снята
+                }
+
+                // Отображаем контент
+                showContent();
+            } else {
+                authError.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            loggedInUser = null;
+            // Скрываем все разделы кроме секции авторизации
+            const sections = document.querySelectorAll('.container');
+            sections.forEach(section => {
+                section.style.display = 'none'; // Скрываем все контейнеры
+            });
+
+            // Скрываем кнопку выхода
+            document.getElementById('logoutButton').style.display = 'none';
+
+            // Сбрасываем rememberedUser
+            localStorage.removeItem('rememberedUser');
+
+            // Показываем окно авторизации
+            document.getElementById('authModal').style.display = 'flex';
+        }
+
+        function showContent() {
+            // Скрываем модальное окно
+            document.getElementById('authModal').style.display = 'none';
+
+            // Показываем основной контент (теперь container)
+            const containers = document.querySelectorAll('.container');
+            containers.forEach(container => {
+                container.style.display = 'block'; // Отображаем все контейнеры
+            });
+
+            // Показываем кнопку выхода
+            document.getElementById('logoutButton').style.display = 'block';
+
+            loadWallPosts(); // Перезагружаем стену после входа
+
+            showSection('main'); // Показываем главную
+        }
+
+        // Функция для добавления сообщения на стену
+        function addWallPost(event) {
+            event.preventDefault();
+            const message = document.getElementById('wallMessage').value;
+            if (message.trim() !== '' && loggedInUser) { // Убеждаемся, что сообщение не пустое и пользователь авторизован
+                const newMessage = { author: loggedInUser.username, text: message }; // Создаем объект сообщения
+                wallMessages.push(newMessage); // Добавляем сообщение в массив
+
+                // Сохраняем сообщения в localStorage
+                localStorage.setItem('wallMessages', JSON.stringify(wallMessages));
+
+                loadWallPosts(); // Обновляем отображение стены
+                document.getElementById('wallMessage').value = ''; // Очищаем поле ввода
+            }
+        }
+
+        // Функция для загрузки сообщений со стены
+        function loadWallPosts() {
+            const wallPostsContainer = document.getElementById('wallPosts');
+            wallPostsContainer.innerHTML = ''; // Очищаем контейнер
+
+            // Загружаем сообщения из localStorage
+            const storedMessages = localStorage.getItem('wallMessages');
+            if (storedMessages) {
+                wallMessages = JSON.parse(storedMessages); // Восстанавливаем массив
+            }
+
+            // Выводим сообщения на стену
+            wallMessages.forEach((message, index) => {
+                const post = document.createElement('div');
+                post.classList.add('wall-post');
+                post.innerHTML = `
+            <p class="author">${message.author}:</p>
+            <p>${message.text}</p>
+            <button class="delete-button" data-index="${index}" onclick="deleteWallPost(this, ${index})">Удалить</button>
+          `;
+                wallPostsContainer.appendChild(post);
+            });
+
+        }
+
+        // Функция для удаления сообщения
+        function deleteWallPost(button, index) {
+            if (!loggedInUser) return; // Если не авторизован, выход
+
+            const message = wallMessages[index];
+            if (message && message.author === loggedInUser.username) { // Проверка авторства
+                wallMessages.splice(index, 1); // Удаляем сообщение из массива
+                localStorage.setItem('wallMessages', JSON.stringify(wallMessages)); // Обновляем localStorage
+                loadWallPosts(); // Обновляем отображение стены
+            }
+        }
+
+        // Загрузка rememberedUser при загрузке страницы
+        window.onload = function () {
+            const rememberedUser = localStorage.getItem('rememberedUser');
+            if (rememberedUser) {
+                loggedInUser = JSON.parse(rememberedUser);
+                showContent(); // Показываем контент, если есть rememberedUser
+            } else {
+                //  Если нет rememberedUser, отображаем модальное окно
+                const containers = document.querySelectorAll('.container');
+                containers.forEach(container => {
+                    container.style.display = 'none'; // Скрываем все контейнеры
+                });
+
+                document.getElementById('authModal').style.display = 'flex'; // Показываем окно авторизации
+            }
+
+            // Загрузка сохраненного контента при загрузке страницы
+            loadSavedContent();
+        }
+
+        // Функция для редактирования контента
+        function toggleEdit(element) {
+            if (loggedInUser && loggedInUser.role === 'admin') {
+                const isEditing = element.classList.contains('editing');
+
+                if (isEditing) {
+                    // Сохранение контента
+                    element.classList.remove('editing');
+                    element.contentEditable = false; // Выключаем редактирование
+
+                    // Сохраняем контент в localStorage
+                    saveContentToLocalStorage();
+
+                    console.log('Сохранено:', element.textContent);
+                } else {
+                    // Режим редактирования
+                    element.classList.add('editing');
+                    element.contentEditable = true; // Включаем редактирование контента
+                    element.focus(); // Перемещаем фокус в элемент для редактирования
+                }
+            }
+        }
+
+        // Функция для сохранения контента в localStorage
+        function saveContentToLocalStorage() {
+            // Сохраняем контент главной страницы
+            localStorage.setItem('main-welcome-text', document.getElementById('main-welcome-text').innerHTML);
+            localStorage.setItem('main-choose-section', document.getElementById('main-choose-section').innerHTML);
+
+            //Сохраняем контент расписания
+             localStorage.setItem('sto-menu-items', document.getElementById('sto-menu-items').innerHTML);
+
+            // Сохраняем контент новостей
+            localStorage.setItem('news-title-1', document.getElementById('news-title-1').innerHTML);
+            localStorage.setItem('news-desc-1', document.getElementById('news-desc-1').innerHTML);
+            localStorage.setItem('news-title-2', document.getElementById('news-title-2').innerHTML);
+            localStorage.setItem('news-desc-2', document.getElementById('news-desc-2').innerHTML);
+
+            // Сохраняем контент туалета
+            localStorage.setItem('toilet-title', document.getElementById('toilet-title').innerHTML);
+            localStorage.setItem('toilet-desc', document.getElementById('toilet-desc').innerHTML);
+
+            // Сохраняем контент учителей
+            localStorage.setItem('teacher-title', document.getElementById('teacher-title').innerHTML);
+            localStorage.setItem('teacher-desc', document.getElementById('teacher-desc').innerHTML);
+        }
+
+        // Функция для загрузки сохраненного контента из localStorage
+        function loadSavedContent() {
+            // Загружаем контент главной страницы
+            if (localStorage.getItem('main-welcome-text')) {
+                document.getElementById('main-welcome-text').innerHTML = localStorage.getItem('main-welcome-text');
+            }
+            if (localStorage.getItem('main-choose-section')) {
+                document.getElementById('main-choose-section').innerHTML = localStorage.getItem('main-choose-section');
+            }
+
+            //Загружаем контент Расписание
+           if (localStorage.getItem('sto-menu-items')) {
+                document.getElementById('sto-menu-items').innerHTML = localStorage.getItem('sto-menu-items');
+            }
+
+            // Загружаем контент новостей
+            if (localStorage.getItem('news-title-1')) {
+                document.getElementById('news-title-1').innerHTML = localStorage.getItem('news-title-1');
+            }
+            if (localStorage.getItem('news-desc-1')) {
+                document.getElementById('news-desc-1').innerHTML = localStorage.getItem('news-desc-1');
+            }
+            if (localStorage.getItem('news-title-2')) {
+                document.getElementById('news-title-2').innerHTML = localStorage.getItem('news-title-2');
+            }
+            if (localStorage.getItem('news-desc-2')) {
+                document.getElementById('news-desc-2').innerHTML = localStorage.getItem('news-desc-2');
+            }
+
+            // Загружаем контент туалета
+            if (localStorage.getItem('toilet-title')) {
+                document.getElementById('toilet-title').innerHTML = localStorage.getItem('toilet-title');
+            }
+            if (localStorage.getItem('toilet-desc')) {
+                document.getElementById('toilet-desc').innerHTML = localStorage.getItem('toilet-desc');
+            }
+
+            // Загружаем контент учителей
+            if (localStorage.getItem('teacher-title')) {
+                document.getElementById('teacher-title').innerHTML = localStorage.getItem('teacher-title');
+            }
+            if (localStorage.getItem('teacher-desc')) {
+                document.getElementById('teacher-desc').innerHTML = localStorage.getItem('teacher-desc');
+            }
+        }
+    </script>
+
+</body>
+
+</html>
